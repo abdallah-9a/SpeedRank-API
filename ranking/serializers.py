@@ -21,3 +21,10 @@ class SubmitScoreSerializer(serializers.ModelSerializer):
         player, _ = Player.objects.get_or_create(username=username)
         score = Score.objects.create(player=player, **validated_data)
         return score
+
+class TopPlayersSerializer(serializers.ModelSerializer):
+    player_username = serializers.CharField(source='player.username')
+
+    class Meta:
+        model = Score
+        fields = ['player_username', 'points']

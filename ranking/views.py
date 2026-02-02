@@ -9,3 +9,11 @@ from .models import Score, Player
 class SubmitScoreView(generics.CreateAPIView):
     queryset = Score.objects.all()
     serializer_class = SubmitScoreSerializer
+
+
+class TopPlayersView(generics.ListAPIView):
+    serializer_class = TopPlayersSerializer
+
+    def get_queryset(self):
+        return Score.objects.select_related('player').order_by('-points')[:10]
+    
