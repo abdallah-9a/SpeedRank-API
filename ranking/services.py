@@ -18,8 +18,11 @@ class RedisLeaderboardService:
         return False
 
     @staticmethod
-    def get_top_10():
-        results = r.zrevrange(LEADERBOARD_KEY, 0, 9, withscores=True)
+    def get_top_players(limit=10):
+        """
+        Get top N players
+        """
+        results = r.zrevrange(LEADERBOARD_KEY, 0, limit - 1, withscores=True)
     
         cleaned_results = []
         for rank, (username, score) in enumerate(results, start=1):

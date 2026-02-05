@@ -60,9 +60,30 @@ class SubmitScoreRedisView(views.APIView):
     
 
 class TopPlayersRedisView(views.APIView):
-    def get(self,request):
-        top_players=RedisLeaderboardService.get_top_10()
-        return Response(top_players,status=status.HTTP_200_OK)
+    def get(self, request):
+        # Get limit from query parameter, default to 10, max 100
+        try:
+            limit = int(request.query_params.get('limit', 10))
+        except ValueError:
+            return Response(
+                {"error": "Invalid limit parameter. Must be an integer."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validate limit range
+        if limit < 1:
+            return Response(
+                {"error": "Limit must be at least 1."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if limit > 100:
+            return Response(
+                {"error": "Limit cannot exceed 100."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        top_players = RedisLeaderboardService.get_top_players(limit)
+        return Response(top_players, status=status.HTTP_200_OK)
 
 
 class MyRankRedisView(views.APIView):
