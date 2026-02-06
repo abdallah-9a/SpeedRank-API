@@ -11,11 +11,8 @@ class RedisLeaderboardService:
     @staticmethod
     def add_score(username, score):
         # Only update if new score is higher
-        current_score = r.zscore(LEADERBOARD_KEY, username)
-        if current_score is None or score > current_score:
-            r.zadd(LEADERBOARD_KEY, {username: score})
-            return True
-        return False
+        resuilt = r.zadd(LEADERBOARD_KEY, {username: score},gt=True) # gt used to update if new score is greater, and prevent race condition 
+        return resuilt > 0
 
     @staticmethod
     def get_top_players(limit=10):
